@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>小而美，轻量级DSL功能展示</title>
+    <style>
+*: focus{outline: none;}
+body{font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;/**/}
+#top_bit{width: 760px;margin: 0 auto;}
+form{width: 900px;margin: 20px auto;}
+p{line-height: 1.6;}
+input, textarea{font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;background-color: #fff;border: 1px solid #ccc;font-size: 20px;width: 900px;min-height: 30px;display: block;margin-bottom: 16px;margin-top: 8px;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;-webkit-transition: all 0.5s ease-in-out;-moz-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;}
+textarea{min-height: 150px;}
+input: focus, textarea: focus{-webkit-box-shadow: 0 0 25px #ccc;-moz-box-shadow: 0 0 25px #ccc;box-shadow: 0 0 25px #ccc;-webkit-transform: scale(1.05);-moz-transform: scale(1.05);transform: scale(1.05);}
+input: not(: focus), textarea: not(: focus){opacity: 0.5;}
+input: required, textarea: required{background: url("/jscss/demoimg/201310/formdemo/asterisk_orange.png") no-repeat 280px 7px;}
+input: valid, textarea: valid{background: url("/jscss/demoimg/201310/formdemo/tick.png") no-repeat 280px 5px;}
+input: focus: invalid, textarea: focus: invalid{background: url("/jscss/demoimg/201310/formdemo/cancel.png") no-repeat 280px 7px;}
+input[type=button]{padding: 10px;background: none;opacity: 1.0;}
+
+.container {
+
+    display: flex;
+    width: 100%;
+}
+
+.div {
+  min-width: 220px;
+}
+
+
+.preview {
+min-height: 150px;
+  flex: 1;
+  margin-bottom: 20px;
+  padding: 20px;
+  background: #f5fcff;
+  border: 1px solid #d3eeff;
+  border-radius: 3px;
+  margin: 0;
+}
+
+.textarea {
+  flex: 1;
+  min-width: 220px;
+  margin-left: 20px;
+  padding: 10px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+}
+
+.preview + .preview {
+  margin-left: 10px;
+}
+</style>
+</head>
+<body>
+<div id="top_bit">
+    <h1>轻量级DSL日志处理神器</h1>
+</div>
+<form method="post">
+    <label for="name">日志文件示例:</label>
+    <textarea id="logText" required></textarea>
+    <label for="message">日志中间结构体:</label>
+    <pre class="preview pre" id="message"></pre>
+    <input type="button" onclick="testNetRequest()" value="执行脚本" />
+    <label for="message">输入处理脚本:</label>
+    <textarea id="dslText" required>$groupByKeys(handleObj,"scheme")</textarea>
+    <input type="button" onclick="testDslRequest()" value="执行脚本" />
+    <label for="message">脚本返回结果:</label>
+    <pre class="preview pre" id="dslResult"></pre>
+</form>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+<script>
+    function testNetRequest(){
+        $.ajax({
+            type:"post",
+            url:"http://localhost:8012/openapi/logHandle",
+            data: {
+                logText: $("#logText").val()
+            },
+            dataType: "json",
+            async:true,
+            success:function(data){
+               var result = JSON.stringify(data, null, 2);//将字符串转换成json对象
+
+               document.getElementById('message').innerText= result ;
+
+            },error:function(data){
+                document.getElementById('message').innerText= "日志解析出错了" ;
+            }
+        });
+    }
+function testDslRequest(){
+        $.ajax({
+            type:"post",
+            url:"http://localhost:8012/openapi/dslHandle",
+            data: {
+                logText: $("#logText").val(),
+                dslText: $("#dslText").val()
+            },
+            dataType: "json",
+            async:true,
+            success:function(data){
+               var result = JSON.stringify(data, null, 2);//将字符串转换成json对象
+               document.getElementById('dslResult').innerText= result ;
+            },error:function(data){
+                 document.getElementById('dslResult').innerText= "脚本执行出错，请检查语法" ;
+            }
+        });
+    }
+
+</script>
+
+
+
+
+
+
+</html>
